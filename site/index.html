@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IU Activities Map</title>
+
+  <!-- Viewport for responsive behavior -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <!-- Your styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- Map container-->
+  <div id="map"></div>
+
+  <aside id="filters">
+    <div class="filters-header">
+      <h3>Filters</h3>
+      <button type="button" id="clearFilters">Clear filters</button>
+    </div>
+
+    <!-- Campus filters -->
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="Bloomington">
+          <span>Bloomington</span>
+        </label>
+      </summary>
+      
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="Bloomington" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="Bloomington" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="Bloomington" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="Bloomington" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="Bloomington" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="Bloomington" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="East">
+          <span>East</span>
+        </label>
+      </summary>
+
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="East" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="East" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="East" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="East" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="East" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="East" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="Kokomo">
+          <span>Kokomo</span>
+        </label>
+      </summary>
+
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="Kokomo" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="Kokomo" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="Kokomo" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="Kokomo" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="Kokomo" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="Kokomo" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="Northwest">
+          <span>Northwest</span>
+        </label>
+      </summary>
+
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="Northwest" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="Northwest" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="Northwest" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="Northwest" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="Northwest" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="Northwest" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="Southeast">
+          <span>Southeast</span>
+        </label>
+      </summary>
+
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="Southeast" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="Southeast" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="Southeast" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="Southeast" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="Southeast" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="Southeast" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="Indianapolis">
+          <span>Indianapolis</span>
+        </label>
+      </summary>
+
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="Indianapolis" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="Indianapolis" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="Indianapolis" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="Indianapolis" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="Indianapolis" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="Indianapolis" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="Columbus">
+          <span>Columbus</span>
+        </label>
+      </summary>
+
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="Columbus" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="Columbus" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="Columbus" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="Columbus" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="Columbus" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="Columbus" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="Fort Wayne">
+          <span>Fort Wayne</span>
+        </label>
+      </summary>
+
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="Fort Wayne" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="Fort Wayne" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="Fort Wayne" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="Fort Wayne" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="Fort Wayne" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="Fort Wayne" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+
+    <details class="campus-details">
+      <summary>
+        <label class="row">
+          <input type="checkbox" class="campus" value="South Bend">
+          <span>South Bend</span>
+        </label>
+      </summary>
+
+      <div class="nested">
+        <label><input type="checkbox" class="program" data-campus="South Bend" value="Advanced College Project"> Advanced College Project</label><br>
+        <label><input type="checkbox" class="program" data-campus="South Bend" value="Career Coaching"> Career Coaching</label><br>
+        <label><input type="checkbox" class="program" data-campus="South Bend" value="Indiana College Core"> Indiana College Core</label><br>
+        <label><input type="checkbox" class="program" data-campus="South Bend" value="Pathways"> Pathways</label><br>
+        <label><input type="checkbox" class="program" data-campus="South Bend" value="Registered Apprenticeship Program K-12 Teacher"> Registered Apprenticeship Program K-12 Teacher</label><br>
+        <label><input type="checkbox" class="program" data-campus="South Bend" value="Seamless Admissions"> Seamless Admissions</label>
+      </div>
+    </details>
+  </aside>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Map logic -->
+  <script src="map.js"></script>
+
+  <!-- Filters Logic-->
+  <script src="filters.js"></script>
+
+</body>
+</html>
