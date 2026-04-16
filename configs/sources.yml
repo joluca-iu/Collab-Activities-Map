@@ -4,101 +4,13 @@ collaboratory:
         Content-Type: "application/json"
         User-Agent: "noble-go-sdk/0.1"
 
-portals:     
-    bloomington:
-        portal_name: "Bloomington"
-        portal_id: fd336724-85fb-46a4-44d9-f92534c98949
-        program_ids:
-            Advanced College Project: 1eedc89e-7aab-4ec9-758e-0add0f00d67f
-            Career Coaching: 3e763ac6-a4a1-4fd1-588b-12b9d12bf4d2
-            Indiana College Core: 1ee03a82-f30e-429a-5281-0bd3cef5571f
-            Pathways: 28e2cf33-73dc-42d5-7853-2344df65efb8
-            Registered Apprenticeship Program K-12 Teacher: None
-            Seamless Admissions: None
-
-    east:
-        portal_name: "East"
-        portal_id: d899e516-9b5e-4816-5db7-eaecae3b85af
-        program_ids:
-            Advanced College Project: af8b01ac-91d4-4e65-7298-92d47131fbe2
-            Career Coaching: eb4aa189-656b-4cd2-7e4c-0a14c27fbb0d
-            Indiana College Core: 80999b3b-fa12-4b96-7230-4cff376f4579
-            Pathways: 20bb1461-04a7-40c0-532c-94d8b7abc739
-            Registered Apprenticeship Program K-12 Teacher: bfb783e9-ee7c-4fee-5d18-132b6a5d2d72
-            Seamless Admissions: None
-
-    kokomo:
-        portal_name: "Kokomo"
-        portal_id: ce6da469-416b-4118-743d-88f14f1f53e2
-        program_ids:
-            Advanced College Project: 3675b623-65f6-412b-7b92-5e6c1df58a33
-            Career Coaching: 4cdf16c1-85e8-4515-61ce-b74802edad40
-            Indiana College Core: 73dfd0ba-c56d-46e0-6d53-f4a06ad16e2d
-            Pathways: 43aa6f2d-5be2-46d1-72a2-83e697f33ffe
-            Registered Apprenticeship Program K-12 Teacher: de5f297d-b80f-435f-6de4-820fc8756c22
-            Seamless Admissions: None
-    northwest:
-        portal_name: "Northwest"
-        portal_id: 4ca2afda-9c3f-443f-6ef6-84cf4c779770
-        program_ids:
-            Advanced College Project: ad5a0c24-a543-45ac-625f-bed8a0b97db4
-            Career Coaching: ce9a9ba7-6851-426e-6f7f-46d891ff001c
-            Indiana College Core: ff79c0b6-b947-450c-411c-e46fd9a76657
-            Pathways: fe5b8e24-14c9-4188-5c26-dc5c4a2204c6
-            Registered Apprenticeship Program K-12 Teacher: None
-            Seamless Admissions: None
-
-    southbend:
-        portal_name: "South Bend"
-        portal_id: e5f2cc64-277a-43d9-6fc3-176e1fbfd276
-        program_ids:
-            Advanced College Project: 630de214-dcc9-44b4-4630-20b526b008f0
-            Career Coaching: bf05f352-3f57-4295-5ec4-66f9dae5f19c
-            Indiana College Core: 889ae1ca-71ff-4d69-6752-92d8b89a049f
-            Pathways: d1f3c251-1a01-4d6b-5fea-0f91bcbd4818
-            Registered Apprenticeship Program K-12 Teacher: None
-            Seamless Admissions: 35ad9534-cf5a-469b-6aba-75cee4b387a1
-
-    south_east:
-        portal_name: "South East"
-        portal_id:  9c674fe8-219a-4c35-7c5e-ff7c3d1ec34a
-        program_ids:
-            Advanced College Project: be5393a3-ccae-421e-43f4-50e8a8d2f30e
-            Career Coaching: f806af45-533a-4104-7ff5-1e4426873ad1
-            Indiana College Core: a077b997-d545-4f68-5b85-ca34edc593a3
-            Pathways: 8a4d6f15-455b-43a9-7d5a-060557609ec7
-            Registered Apprenticeship Program K-12 Teacher: None
-            Seamless Admissions: 35ad9534-cf5a-469b-6aba-75cee4b387a1
-
+portals:
     indianapolis:
         portal_name: "Indianapolis"
         portal_id: de3eb711-9ae8-43e3-6ef0-8fc2da9c62c1
         program_ids:
-            Advanced College Project: None
-            Career Coaching: 32aa446c-eb57-457b-62a9-f88994a2d8a1
-            Indiana College Core: 3f626384-6f4a-4560-69c0-a8d7a7f9425e
-            Pathways: None
-            Registered Apprenticeship Program K-12 Teacher: None
-            Seamless Admissions: aa73bb60-9135-404e-5c96-36a1be417a1c
-
-    columbus:
-        portal_name: "Columbus"
-        portal_id: 4004c698-b4bd-4110-4280-3b95bcc04bf8
-        program_ids:
-            Advanced College Project: None
-            Career Coaching: None
-            Indiana College Core: None
-            Pathways: None
-            Registered Apprenticeship Program K-12 Teacher: 4a0a7d94-d9aa-4972-646e-372fafb0f3e2
-            Seamless Admissions: 67569933-4935-4abe-6533-a09d2d7951fe
-
-    fort_wayne:
-        portal_name: "Fort Wayne"
-        portal_id: 5f446fa2-7af9-47dc-60ed-d09ef4890ee5
-        program_ids:
-            Advanced College Project: None
-            Career Coaching: None
-            Indiana College Core: None
-            Pathways: None
-            Registered Apprenticeship Program K-12 Teacher: None
-            Seamless Admissions: None
+            IUI 2030 Strategic Plan Pillar 3, Goal 1: Workforce Development: b8f8abd3-a732-4fd9-765a-45e606ff0684
+            IUI 2030 Strategic Plan Pillar 3, Goal 2: P-12 Education: bb02667b-b6cf-4565-7e0f-44d0064955ec
+            IUI 2030 Strategic Plan Pillar 3, Goal 3: Economic Development: d179350a-251d-4638-522a-b4650fd19c46
+            IUI 2030 Strategic Plan Pillar 3, Goal 4: Health Service Outcomes: 1546d15b-22ee-47ce-5539-68e8978132ea
+            IUI 2030 Strategic Plan Pillar 3, Goal 5: Global Perspectives: 2c1032c4-247b-44ca-6a88-4e7a2e71f5ee

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>IUI Pillar 3 Community Partners Map</title>
+
+  <!-- Viewport for responsive behavior -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <!-- Your styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- Map container-->
+  <div id="map"></div>
+
+  <aside id="filters">
+    <div class="filters-header">
+      <h3>Pillar 3 Programs</h3>
+      <button type="button" id="clearFilters">Clear filters</button>
+    </div>
+
+    <!-- Pillar 3 program filters -->
+    <div class="program-list">
+      <label>
+        <input type="checkbox" class="program" data-campus="Indianapolis"
+          value="IUI 2030 Strategic Plan Pillar 3, Goal 1: Workforce Development" checked>
+        Goal 1: Workforce Development
+      </label>
+      <label>
+        <input type="checkbox" class="program" data-campus="Indianapolis"
+          value="IUI 2030 Strategic Plan Pillar 3, Goal 2: P-12 Education" checked>
+        Goal 2: P-12 Education
+      </label>
+      <label>
+        <input type="checkbox" class="program" data-campus="Indianapolis"
+          value="IUI 2030 Strategic Plan Pillar 3, Goal 3: Economic Development" checked>
+        Goal 3: Economic Development
+      </label>
+      <label>
+        <input type="checkbox" class="program" data-campus="Indianapolis"
+          value="IUI 2030 Strategic Plan Pillar 3, Goal 4: Health Service Outcomes" checked>
+        Goal 4: Health Service Outcomes
+      </label>
+      <label>
+        <input type="checkbox" class="program" data-campus="Indianapolis"
+          value="IUI 2030 Strategic Plan Pillar 3, Goal 5: Global Perspectives" checked>
+        Goal 5: Global Perspectives
+      </label>
+    </div>
+  </aside>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Map logic -->
+  <script src="map.js"></script>
+
+  <!-- Filters Logic-->
+  <script src="filters.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+#map {
+  height: 100%;
+  width: 100vw;
+}
+
+.leaflet-container {
+  font-family: Arial, sans-serif;
+}
+
+#filters {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow-y: auto;
+  background: #fff;
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.filters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.filters-header h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+#clearFilters {
+  border: 1px solid #ccc;
+  background: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.program-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.program-list label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.program-list input[type="checkbox"] {
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: #9b111e;
+}
+
+/* Popup styles for tabbed entity view */
+.popup-container { max-width: 320px; font-family: Arial, sans-serif; }
+.popup-top-menu { font-weight: 600; margin-bottom: 6px; }
+.popup-top-menu .popup-tab-btn { background: transparent; border: none; color: #333; padding: 4px 6px; cursor: pointer; }
+.popup-top-menu .popup-tab-btn.active { text-decoration: underline; color: #990000; }
+.iu-crimson-line { height: 3px; background: #9b111e; margin: 6px 0 10px 0; }
+.entity-name { margin: 0 0 6px 0; font-size: 16px; }
+.section-label { font-size: 12px; color: #666; margin-top: 8px; }
+.rect-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #333;
+}
+
+/* the red rectangle bullet */
+.rect-item::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+  height: 1em;
+  background: #9b111e;
+  border-radius: 1px;
+  transform: translateY(0.05em);
+}

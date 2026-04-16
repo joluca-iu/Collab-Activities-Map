@@ -1,2 +1,4 @@
 .env
 .venv
+data/
+public/site_data/schools.geojson
