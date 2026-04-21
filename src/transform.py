@@ -8,8 +8,8 @@ def transform_community_partners():
     raw_data_dir = DATA_DIR / "raw"
 
     all_data = []
-    # activities_map: org_id -> deduplicated list of activity dicts
-    activities_map = {}
+    # activities_by_name: activity name -> activity dict (deduplicated across programs)
+    activities_by_name = {}
 
     for campus in os.listdir(raw_data_dir):
         campus_dir = raw_data_dir / campus
@@ -17,19 +17,14 @@ def transform_community_partners():
             continue
         for file in os.listdir(campus_dir):
             if file.endswith("_community_partners.csv"):
-                df = pd.read_csv(campus_dir / file)
-                all_data.append(df)
+                all_data.append(pd.read_csv(campus_dir / file))
             elif file.endswith("_activities.json"):
                 with open(campus_dir / file, encoding='utf-8') as f:
-                    sidecar = json.load(f)
-                for org_id, acts in sidecar.items():
-                    if org_id not in activities_map:
-                        activities_map[org_id] = []
-                    existing_ids = {a.get('id') for a in activities_map[org_id]}
-                    for act in acts:
-                        if act.get('id') not in existing_ids:
-                            activities_map[org_id].append(act)
-                            existing_ids.add(act.get('id'))
+                    acts = json.load(f)
+                for act in acts:
+                    name = act.get('name')
+                    if name and name not in activities_by_name:
+                        activities_by_name[name] = act
 
     ##Join all csv together
     combined_df = pd.concat(all_data, ignore_index=True)
@@ -93,7 +88,13 @@ def transform_community_partners():
     
     def row_to_entity(row):
         entity = {k: row[k] for k in combined_df.columns.drop(['lat', 'lon'])}
-        entity['activities'] = activities_map.get(str(row['id']), [])
+        # Resolve activityName strings to full activity objects via name lookup
+        act_names = row.get('activityName') or []
+        if isinstance(act_names, str):
+            act_names = [a.strip() for a in act_names.split(',') if a.strip()]
+        entity['activities'] = [
+            activities_by_name[n] for n in act_names if n in activities_by_name
+        ]
         return entity
     
     # minimal columns for the map
