@@ -8,15 +8,28 @@ def transform_community_partners():
     raw_data_dir = DATA_DIR / "raw"
 
     all_data = []
+    # activities_map: org_id -> deduplicated list of activity dicts
+    activities_map = {}
+
     for campus in os.listdir(raw_data_dir):
         campus_dir = raw_data_dir / campus
         if not os.path.isdir(campus_dir):
             continue
         for file in os.listdir(campus_dir):
             if file.endswith("_community_partners.csv"):
-                file_path = campus_dir / file
-                df = pd.read_csv(file_path)
+                df = pd.read_csv(campus_dir / file)
                 all_data.append(df)
+            elif file.endswith("_activities.json"):
+                with open(campus_dir / file, encoding='utf-8') as f:
+                    sidecar = json.load(f)
+                for org_id, acts in sidecar.items():
+                    if org_id not in activities_map:
+                        activities_map[org_id] = []
+                    existing_ids = {a.get('id') for a in activities_map[org_id]}
+                    for act in acts:
+                        if act.get('id') not in existing_ids:
+                            activities_map[org_id].append(act)
+                            existing_ids.add(act.get('id'))
 
     ##Join all csv together
     combined_df = pd.concat(all_data, ignore_index=True)
@@ -78,9 +91,10 @@ def transform_community_partners():
     ###Combine entites with same lat/lon into single entry###
     #In the future once IDOE codes are imported to Colab, we can use those to distinguish public schools vs corporations vs charters
     
-    #Create dictionary of each row
     def row_to_entity(row):
-        return {k: row[k] for k in combined_df.columns.drop(['lat', 'lon'])}
+        entity = {k: row[k] for k in combined_df.columns.drop(['lat', 'lon'])}
+        entity['activities'] = activities_map.get(str(row['id']), [])
+        return entity
     
     # minimal columns for the map
     cols = ["externalId", "portal_name", "name", "lat", "lon", "programs", "activityName"]
