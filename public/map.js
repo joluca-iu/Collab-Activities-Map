@@ -6,49 +6,177 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap contributors"
 }).addTo(map);
 
-// Load and render Indianapolis campus border
-fetch("site_data/indianapolis.geojson")
-  .then(res => res.json())
-  .then(borderData => {
-    L.geoJSON(borderData, {
-      style: {
-        color: "#9b111e",
-        weight: 2,
-        fillOpacity: 0.05,
-        fillColor: "#9b111e"
-      }
-    }).addTo(map);
-  })
-  .catch(err => console.warn("Could not load campus border:", err));
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+// "IUI 2030 Strategic Plan Pillar 3, Goal 1: Workforce Development"
+//   → "Goal 1: Workforce Development"
+function shortGoalLabel(program) {
+  const parts = program.split(', ');
+  return parts.length > 1 ? parts.slice(1).join(', ') : program;
+}
 
 
-// Switch visible tab inside a popup. Exposed on window so inline onclick handlers can call it.
-window.switchPopupTab = function(popupId, index) {
+// ── Tab switching ─────────────────────────────────────────────────────────────
+
+function activateTab(root, panelClass, tabClass, dataAttr, index) {
+  root.querySelectorAll('.' + panelClass).forEach(p => p.style.display = 'none');
+  root.querySelectorAll('.' + tabClass).forEach(b => b.classList.remove('active'));
+  const panel = root.querySelector(`[data-${dataAttr}="${index}"]`);
+  const btn   = root.querySelectorAll('.' + tabClass)[index];
+  if (panel) panel.style.display = 'block';
+  if (btn)   btn.classList.add('active');
+}
+
+window.switchEntityTab = function(popupId, index) {
   try {
     const container = document.getElementById(popupId);
     if (!container) return;
-    const panels = Array.from(container.querySelectorAll('.popup-entity'));
-    const buttons = Array.from(container.querySelectorAll('.popup-tab-btn'));
-    panels.forEach(p => p.style.display = 'none');
-    buttons.forEach(b => b.classList.remove('active'));
-    const target = panels.find(p => p.getAttribute('data-index') === String(index));
-    const btn = buttons.find(b => b.getAttribute('data-index') === String(index));
-    if (target) target.style.display = 'block';
-    if (btn) btn.classList.add('active');
-  } catch (e) {
-    console.error('switchPopupTab error', e);
-  }
+    activateTab(container, 'entity-panel', 'entity-tab', 'entity', index);
+  } catch (e) { console.error('switchEntityTab error', e); }
+};
+
+window.switchGoalTab = function(popupId, entityIndex, goalIndex) {
+  try {
+    const panel = document.querySelector(`#${popupId} .entity-panel[data-entity="${entityIndex}"]`);
+    if (!panel) return;
+    activateTab(panel, 'goal-panel', 'goal-tab', 'goal', goalIndex);
+  } catch (e) { console.error('switchGoalTab error', e); }
 };
 
 
-// Load schools data and add markers
+// ── Popup builder ─────────────────────────────────────────────────────────────
+
+let _popupSeq = 0;
+
+function buildActivityHtml(activity) {
+  const actUrl  = activity.url  ?? null;
+  const actName = activity.name ?? 'Unnamed Activity';
+  const focuses = Array.isArray(activity.focuses) ? activity.focuses : [];
+  const contact = [activity.contactFirstname, activity.contactLastname].filter(Boolean).join(' ');
+  const office  = activity.contactOffice ?? null;
+  const units   = activity.units ?? null;
+
+  const nameHtml = actUrl
+    ? `<a href="${actUrl}" class="activity-name" target="_blank" rel="noopener">${actName}</a>`
+    : `<span class="activity-name-plain">${actName}</span>`;
+
+  const focusesLabelHtml = focuses.length
+    ? `<div class="social-issue-line"><span class="field-label">Social Issue Addressed:</span> ${focuses.join(', ')}</div>`
+    : '';
+
+  const contactHtml = contact
+    ? `<div class="meta-single-line"><span class="field-label">Contact:</span> ${contact}${office ? `, ${office}` : ''}</div>`
+    : '';
+
+  const unitsHtml = units
+    ? `<div class="meta-single-line"><span class="field-label">Units:</span> ${units}</div>`
+    : '';
+
+  return `
+    <div class="activity-item">
+      ${nameHtml}
+      ${focusesLabelHtml}
+      ${contactHtml}
+      ${unitsHtml}
+    </div>`;
+}
+
+function buildEntityPanel(entity, entityIndex, popupId) {
+  const name        = entity?.name ?? 'Unknown Organization';
+  const url         = entity?.url;
+  const description = entity?.description;
+  const type        = entity?.type ?? '';
+  const programs    = Array.isArray(entity?.programs) ? entity.programs : (entity?.programs ? [entity.programs] : []);
+  const activities  = Array.isArray(entity?.activities) ? entity.activities : [];
+
+  const nameHtml = url
+    ? `<a href="${url}" class="org-name" target="_blank" rel="noopener">${name}</a>`
+    : `<span class="org-name-plain">${name}</span>`;
+
+  const typeHtml = type
+    ? `<span class="org-type">${type}</span>`
+    : '';
+
+  const descHtml = description
+    ? `<p class="org-description">${description}</p>`
+    : `<p class="org-description org-description--empty"><em>No description available.</em></p>`;
+
+  function activitiesForGoal(goalName) {
+    const goalActivities = activities.filter(a => {
+      const goals = Array.isArray(a.goal_names) ? a.goal_names : [];
+      // Show if activity matches this goal, or has no goal mapping (show under all)
+      return goals.length === 0 || goals.includes(goalName);
+    });
+    return goalActivities.length
+      ? goalActivities.map(buildActivityHtml).join('')
+      : `<div class="activity-item"><p class="activity-description"><em>No activities listed for this goal.</em></p></div>`;
+  }
+
+  const goalTabsHtml = programs.length
+    ? programs.map((p, i) => `
+        <button class="goal-tab${i === 0 ? ' active' : ''}"
+                onclick="switchGoalTab('${popupId}', ${entityIndex}, ${i}); return false;">
+          ${shortGoalLabel(p)}
+        </button>`).join('')
+    : '';
+
+  const goalPanelsHtml = programs.length
+    ? programs.map((p, i) => `
+        <div class="goal-panel" data-goal="${i}" style="display:${i === 0 ? 'block' : 'none'};">
+          ${activitiesForGoal(p)}
+        </div>`).join('')
+    : `<div class="goal-panel" data-goal="0">${activitiesForGoal('')}</div>`;
+
+  const goalsSection = programs.length
+    ? `<div class="goal-tab-bar">${goalTabsHtml}</div>${goalPanelsHtml}`
+    : goalPanelsHtml;
+
+  return `
+    <div class="entity-panel" data-entity="${entityIndex}" style="display:${entityIndex === 0 ? 'block' : 'none'};">
+      <div class="org-header">
+        ${nameHtml}
+        ${typeHtml}
+      </div>
+      <div class="iu-crimson-line"></div>
+      ${descHtml}
+      ${goalsSection}
+    </div>`;
+}
+
+function buildPopupHtml(entities, popupId) {
+  if (!entities.length) {
+    return `<div id="${popupId}" class="popup-container"><p class="org-description">No details available.</p></div>`;
+  }
+
+  const entityTabBarHtml = entities.length > 1
+    ? `<div class="entity-tab-bar">
+        ${entities.map((e, i) => `
+          <button class="entity-tab${i === 0 ? ' active' : ''}"
+                  onclick="switchEntityTab('${popupId}', ${i}); return false;">
+            ${e?.name ?? `Entity ${i + 1}`}
+          </button>`).join('')}
+       </div>`
+    : '';
+
+  const panelsHtml = entities.map((e, i) => buildEntityPanel(e, i, popupId)).join('');
+
+  return `
+    <div id="${popupId}" class="popup-container">
+      ${entityTabBarHtml}
+      ${panelsHtml}
+    </div>`;
+}
+
+
+// ── Marker rendering ──────────────────────────────────────────────────────────
+
 function apply_markers(schools_geojson) {
   if (!schools_geojson?.features) return;
-  // Clear existing markers
+
+  // Clear existing markers only (preserve tile/GeoJSON layers)
   map.eachLayer(layer => {
-    if (layer instanceof L.Marker) {
-      map.removeLayer(layer);
-    }
+    if (layer instanceof L.Marker) map.removeLayer(layer);
   });
 
   schools_geojson.features.forEach(feature => {
@@ -57,57 +185,10 @@ function apply_markers(schools_geojson) {
 
     const [lon, lat] = coords;
     const entities = feature.properties?.entity ?? [];
-    // Build a tabbed popup HTML where each entity becomes a tab
-    let popup_html = "";
-    const popupId = `popup-${Math.random().toString(36).substr(2, 9)}`;
+    const popupId  = `popup-${++_popupSeq}`;
 
-    // Top menu (tabs)
-    const tabButtons = entities.map((entity, i) => {
-      const label = entity?.name ?? `Entity ${i + 1}`;
-      return `<button class="popup-tab-btn" data-index="${i}" onclick="switchPopupTab('${popupId}', ${i}); return false;">${label}</button>`;
-    }).join(' | ');
-
-    // Entity panels
-    const panels = entities.map((entity, i) => {
-      const name = entity?.name ?? 'Unknown';
-      const portal = entity?.portal_name ?? '';
-      const programs = Array.isArray(entity?.programs) ? entity.programs : (entity?.programs ? [entity.programs] : []);
-      const activities = Array.isArray(entity?.activityName) ? entity.activityName : (Array.isArray(entity?.activities) ? entity.activities : []);
-
-      const programsHtml = programs.length ? programs.map(p => `<div class="rect-item">${p}</div>`).join('') : `<div class="rect-item">No programs</div>`;
-      const activitiesHtml = activities.length ? activities.map(a => `<div class="rect-item">${a}</div>`).join('') : `<div class="rect-item">No activities</div>`;
-      const campusesHtml = portal ? `<div class="rect-item">${portal}</div>` : `<div class="rect-item">None</div>`;
-
-      return `
-        <div class="popup-entity" data-index="${i}" style="display: ${i === 0 ? 'block' : 'none'};">
-          <h2 class="entity-name">${name}</h2>
-          <div class="section-label">Campus</div>
-          <div class="red-rect campuses">${campusesHtml}</div>
-
-          <div class="section-label">Programs</div>
-          <div class="red-rect programs">${programsHtml}</div>
-
-          <div class="section-label">Activities</div>
-          <div class="red-rect activities">${activitiesHtml}</div>
-        </div>
-      `;
-    }).join('');
-
-    if (!entities.length) {
-      popup_html = `<div id="${popupId}" class="popup-container"><p>No details available.</p></div>`;
-    } else {
-      popup_html = `
-        <div id="${popupId}" class="popup-container">
-          <div class="popup-top-menu">${tabButtons}</div>
-          <div class="iu-crimson-line"></div>
-          <div class="popup-entities">${panels}</div>
-        </div>
-      `;
-    }
-
-    // Create marker and bind popup
     L.marker([lat, lon])
       .addTo(map)
-      .bindPopup(popup_html);
+      .bindPopup(buildPopupHtml(entities, popupId), { maxWidth: 540 });
   });
 }

@@ -12,6 +12,9 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
+
+/* ── Filter panel ──────────────────────────────────────────────────────────── */
+
 #filters {
   position: fixed;
   top: 20px;
@@ -69,30 +72,192 @@ html, body {
   accent-color: #9b111e;
 }
 
-/* Popup styles for tabbed entity view */
-.popup-container { max-width: 320px; font-family: Arial, sans-serif; }
-.popup-top-menu { font-weight: 600; margin-bottom: 6px; }
-.popup-top-menu .popup-tab-btn { background: transparent; border: none; color: #333; padding: 4px 6px; cursor: pointer; }
-.popup-top-menu .popup-tab-btn.active { text-decoration: underline; color: #990000; }
-.iu-crimson-line { height: 3px; background: #9b111e; margin: 6px 0 10px 0; }
-.entity-name { margin: 0 0 6px 0; font-size: 16px; }
-.section-label { font-size: 12px; color: #666; margin-top: 8px; }
-.rect-item {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-  font-size: 12px;
-  line-height: 1.2;
-  color: #333;
+
+/* ── Popup container ───────────────────────────────────────────────────────── */
+
+.popup-container {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color: #1a1a1a;
+  width: 510px;
 }
 
-/* the red rectangle bullet */
-.rect-item::before {
-  content: "";
-  display: inline-block;
-  width: 0.7em;
-  height: 1em;
+
+/* ── Entity tabs (multiple orgs at same map point) ─────────────────────────── */
+
+.entity-tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.entity-tab {
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #333;
+  white-space: nowrap;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.entity-tab.active {
   background: #9b111e;
+  color: #fff;
+  border-color: #9b111e;
+}
+
+
+/* ── Org header ────────────────────────────────────────────────────────────── */
+
+.org-header {
+  margin-bottom: 8px;
+}
+
+.org-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #9b111e;
+  text-decoration: none;
+  line-height: 1.3;
+}
+
+.org-name:hover {
+  text-decoration: underline;
+}
+
+.org-name-plain {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.org-type {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  text-transform: capitalize;
+  margin-top: 3px;
+  letter-spacing: 0.02em;
+}
+
+.iu-crimson-line {
+  height: 2px;
+  background: #9b111e;
+  margin: 8px 0 10px;
   border-radius: 1px;
-  transform: translateY(0.05em);
+}
+
+.org-description {
+  font-size: 13px;
+  color: #444;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.org-description--empty {
+  color: #999;
+}
+
+
+/* ── Goal tabs ─────────────────────────────────────────────────────────────── */
+
+.goal-tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 10px;
+}
+
+.goal-tab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 6px 12px 5px;
+  margin-bottom: -2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #777;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.goal-tab:hover {
+  color: #9b111e;
+}
+
+.goal-tab.active {
+  color: #9b111e;
+  border-bottom-color: #9b111e;
+}
+
+
+/* ── Activity items ────────────────────────────────────────────────────────── */
+
+.goal-panel {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.activity-item {
+  padding: 7px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9b111e;
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.activity-name:hover {
+  text-decoration: underline;
+}
+
+.activity-name-plain {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+.social-issue-line {
+  font-size: 11px;
+  color: #555;
+  margin: 4px 0 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta-single-line {
+  font-size: 11px;
+  color: #555;
+  margin: 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.field-label {
+  font-weight: 600;
+  color: #333;
 }
