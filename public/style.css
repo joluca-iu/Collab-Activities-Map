@@ -21,11 +21,11 @@ html, body {
   right: 20px;
   width: 300px;
   padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 2px solid #B9C1C6;
+  border-radius: 8px;
   overflow-y: auto;
-  background: #fff;
-  font-family: system-ui, sans-serif;
+  background: #EEEEF0;
+  font-family: Arial, sans-serif;
   font-size: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 1000;
@@ -45,11 +45,21 @@ html, body {
 }
 
 #clearFilters {
-  border: 1px solid #ccc;
-  background: white;
-  padding: 6px 10px;
-  border-radius: 8px;
+  background: #990000;
+  color: #fff;
+  font-weight: 700;
+  border: 1px solid #990000;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 11px;
   cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+#clearFilters:hover {
+  background: #fff;
+  color: #990000;
+  border-color: #990000;
 }
 
 .program-list {
