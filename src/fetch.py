@@ -42,7 +42,7 @@ COMMUNITY_PARTNERS_QUERY = """mutation GetCommunityOrgFullFunc($input: GetCommun
 ACTIVITIES_QUERY = """mutation GetActivitiesCoursesFunc($input: GetActivitiesCoursesFuncInput!) {
   getActivitiesCoursesFunc(input: $input) {
     results {
-      id name description url focuses
+      id name description url focuses startTime endTime
       contactFirstname contactLastname contactEmail contactOffice
       units courses
     }

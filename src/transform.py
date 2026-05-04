@@ -3,8 +3,29 @@ import pandas as pd
 import os
 import json
 import math
+from datetime import datetime, timezone
 from utils.paths import DATA_DIR
 import re
+
+_CUTOFF = datetime(2023, 1, 1, tzinfo=timezone.utc)
+
+
+def _parse_date(val):
+    if not val or (isinstance(val, float) and math.isnan(val)):
+        return None
+    try:
+        return datetime.fromisoformat(str(val))
+    except ValueError:
+        return None
+
+
+def _should_keep_activity(act):
+    start = _parse_date(act.get('startTime'))
+    end   = _parse_date(act.get('endTime'))
+    if start is None or start >= _CUTOFF:
+        return True
+    # started before 2023 — only remove if it has also ended
+    return end is None or end > datetime.now(timezone.utc)
 
 
 def _parse_activity_list(raw):
@@ -89,6 +110,18 @@ def transform_community_partners():
             elif file.endswith(".csv"):
                 all_data.append(pd.read_csv(campus_dir / file))
 
+    # Filter out activities that started before 2023 and have since ended
+    activities_by_name = {k: v for k, v in activities_by_name.items() if _should_keep_activity(v)}
+
+    surviving_names = set(activities_by_name.keys())
+
+    # Save filtered activity list for review
+    cleaned_data_dir = DATA_DIR / "cleaned"
+    os.makedirs(cleaned_data_dir, exist_ok=True)
+    pd.DataFrame(list(activities_by_name.values())).to_csv(
+        cleaned_data_dir / "activities_date_filtered.csv", index=False
+    )
+
     ##Join all csv together
     combined_df = pd.concat(all_data, ignore_index=True)
 
@@ -161,6 +194,13 @@ def transform_community_partners():
     combined_df = combined_df.where(pd.notnull(combined_df), None)
     
     combined_df = combined_df.rename(columns={"latitude": "lat", "longitude": "lon"})
+
+    # Drop partners whose every activity was filtered out by the date rule
+    combined_df = combined_df[
+        combined_df['activityName'].apply(
+            lambda names: any(n in surviving_names for n in (names if isinstance(names, list) else []))
+        )
+    ]
 
     # Build inverted index: activity name → [{id, name}] for all located orgs
     activity_partners = {}
