@@ -1,9 +1,21 @@
+import ast
 import pandas as pd
 import os
 import json
 import math
 from utils.paths import DATA_DIR
 import re
+
+
+def _parse_activity_list(raw):
+    """Parse a Python-repr list string into its elements without splitting on commas inside names."""
+    try:
+        val = ast.literal_eval(str(raw))
+        if isinstance(val, list):
+            return [str(item).strip() for item in val if str(item).strip()]
+        return [str(val).strip()] if str(val).strip() else []
+    except Exception:
+        return [a.strip() for a in re.sub(r"[\[\]']", "", str(raw)).split(',') if a.strip()]
 
 
 def _sanitize(v):
@@ -102,10 +114,9 @@ def transform_community_partners():
         'status': 'first',
         # Activities — flatten and deduplicate individual names across all grouped rows
         'activityName': lambda x: sorted(set(
-            a.strip()
+            a
             for raw in x.dropna().astype(str)
-            for a in re.sub(r"[\[\]']", "", raw).split(',')
-            if a.strip()
+            for a in _parse_activity_list(raw)
         )),
         'activityCnt':  lambda x: x.dropna().astype(str).nunique(),
         # Roles / contacts

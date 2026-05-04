@@ -21,11 +21,11 @@ html, body {
   right: 20px;
   width: 300px;
   padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 2px solid #B9C1C6;
+  border-radius: 8px;
   overflow-y: auto;
-  background: #fff;
-  font-family: system-ui, sans-serif;
+  background: #EEEEF0;
+  font-family: Arial, sans-serif;
   font-size: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 1000;
@@ -45,11 +45,21 @@ html, body {
 }
 
 #clearFilters {
-  border: 1px solid #ccc;
-  background: white;
-  padding: 6px 10px;
-  border-radius: 8px;
+  background: #990000;
+  color: #fff;
+  font-weight: 700;
+  border: 1px solid #990000;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 11px;
   cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+#clearFilters:hover {
+  background: #fff;
+  color: #990000;
+  border-color: #990000;
 }
 
 .program-list {
@@ -69,17 +79,34 @@ html, body {
 .program-list input[type="checkbox"] {
   margin-top: 2px;
   flex-shrink: 0;
-  accent-color: #9b111e;
+  accent-color: #990000;
 }
 
 
 /* ── Popup container ───────────────────────────────────────────────────────── */
 
+.leaflet-popup-content-wrapper {
+  background: #EEEEF0;
+  border: 2px solid #B9C1C6;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.leaflet-popup-tip {
+  background: #EEEEF0;
+}
+
 .popup-container {
-  font-family: Arial, sans-serif;
+  font-family: 'Benton Sans', Arial, sans-serif;
   font-size: 13px;
   color: #1a1a1a;
   width: 510px;
+}
+
+.org-name-plain,
+.activity-name-plain,
+.programs-heading {
+  font-family: Arial, sans-serif;
 }
 
 
@@ -107,9 +134,9 @@ html, body {
 }
 
 .entity-tab.active {
-  background: #9b111e;
+  background: #990000;
   color: #fff;
-  border-color: #9b111e;
+  border-color: #990000;
 }
 
 
@@ -128,7 +155,7 @@ html, body {
   display: block;
   font-size: 16px;
   font-weight: 700;
-  color: #9b111e;
+  color: #990000;
   text-decoration: none;
   line-height: 1.3;
 }
@@ -140,24 +167,27 @@ html, body {
 .org-name-plain {
   display: block;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: #1a1a1a;
+  letter-spacing: 0.04em;
   line-height: 1.3;
-  text-align: center;
+  text-align: left;
 }
 
 .org-type {
   display: block;
   font-size: 11px;
+  font-weight: 600;
   color: #888;
-  text-transform: capitalize;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   margin-top: 3px;
-  letter-spacing: 0.02em;
+  text-align: left;
 }
 
 .iu-crimson-line {
   height: 2px;
-  background: #9b111e;
+  background: #990000;
   margin: 8px 0 10px;
   border-radius: 1px;
 }
@@ -198,26 +228,33 @@ html, body {
 }
 
 .goal-tab:hover {
-  color: #9b111e;
+  color: #990000;
 }
 
 .goal-tab.active {
-  color: #9b111e;
-  border-bottom-color: #9b111e;
+  color: #990000;
+  border-bottom-color: #990000;
 }
 
 
 /* ── Activity items ────────────────────────────────────────────────────────── */
 
+.programs-heading {
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #990000;
+}
+
 .goal-panel {
-  max-height: 200px;
-  overflow-y: auto;
   padding-right: 2px;
 }
 
 .activity-item {
   padding: 7px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #B9C1C6;
 }
 
 .activity-item:last-child {
@@ -228,7 +265,7 @@ html, body {
   display: block;
   font-size: 15px;
   font-weight: 700;
-  color: #9b111e;
+  color: #990000;
   text-decoration: none;
   line-height: 1.4;
   letter-spacing: 0.01em;
@@ -246,23 +283,31 @@ html, body {
 .activity-name-plain {
   display: block;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: #333;
+  letter-spacing: 0.04em;
   line-height: 1.4;
-  letter-spacing: 0.01em;
   text-align: left;
 }
 
-.activity-learn-more {
-  display: block;
-  font-size: 12px;
-  color: #1a1a1a !important;
-  text-decoration: underline;
-  margin-top: 2px;
+.learn-more-btn {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #fff !important;
+  font-weight: 700;
+  background: #990000;
+  border: 1px solid #990000;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
 }
 
-.activity-learn-more:hover {
-  color: #1a1a1a !important;
+.learn-more-btn:hover {
+  background: #fff;
+  color: #990000 !important;
+  border-color: #990000;
 }
 
 .unit-link {
@@ -297,26 +342,42 @@ html, body {
   color: #333;
 }
 
+.goal-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8C8C8C;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
-/* ── Activity filter button (Show other community partners) ────────────────── */
+
+/* ── Activity action row (Learn more + Display other partners) ─────────────── */
+
+.activity-action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
 
 .activity-filter-btn {
-  display: block;
-  margin: 6px 0 2px;
-  text-align: left;
-  padding: 3px 8px;
+  display: inline-block;
+  padding: 4px 10px;
   font-size: 11px;
-  background: #f5e6e8;
-  color: #9b111e;
-  border: 1px solid #d4a0a8;
-  border-radius: 3px;
+  background: #990000;
+  color: #fff;
+  font-weight: 700;
+  border: 1px solid #990000;
+  border-radius: 12px;
   cursor: pointer;
   white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
 }
 
 .activity-filter-btn:hover {
-  background: #9b111e;
-  color: #fff;
+  background: #fff;
+  color: #990000;
+  border-color: #990000;
 }
 
 
@@ -348,7 +409,7 @@ html, body {
 .partner-link {
   display: block;
   font-size: 11px;
-  color: #9b111e;
+  color: #990000;
   cursor: pointer;
   padding: 2px 0;
   text-decoration: underline;

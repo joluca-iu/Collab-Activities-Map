@@ -66,40 +66,30 @@ function attrJson(v) {
   return JSON.stringify(v).replace(/"/g, '&quot;');
 }
 
-function buildActivityHtml(activity, currentEntityId) {
+function buildActivityHtml(activity, currentEntityId, goalLabel) {
   const actId   = activity.id   ?? null;
   const actName = activity.name ?? 'Unnamed Activity';
-  const focuses = Array.isArray(activity.focuses) ? activity.focuses : [];
-  const contact = [activity.contactFirstname, activity.contactLastname].filter(Boolean).join(' ');
-  const office  = activity.contactOffice ?? null;
   const unitLinks = Array.isArray(activity.unit_links) ? activity.unit_links : [];
-  const courses = activity.courses ?? null;
 
-  // Always link via the Collaboratory activity page using the activity id
   const actUrl  = actId ? `https://he.cecollaboratory.com/iui/activities/${actId}` : null;
   const learnMoreHtml = actUrl
-    ? `<a href="${actUrl}" class="activity-learn-more" target="_blank" rel="noopener">Click to learn more about program</a>`
+    ? `<a href="${actUrl}" class="learn-more-btn" target="_blank" rel="noopener">Learn more about program</a>`
     : '';
+
   const nameHtml = `
     <div class="activity-name-header">
-      <span class="field-label" style="font-style: italic;">Program</span>
-      <div class="activity-name-plain" style="font-weight: 700;">${actName}</div>
-      ${learnMoreHtml}
+      <div class="activity-name-plain">${actName}</div>
+      <span class="goal-label">${goalLabel || 'Program'}</span>
     </div>`;
 
   const unitsHtml = unitLinks.length
-    ? `<div class="meta-single-line"><span class="field-label">Units:</span> ${
+    ? `<div class="meta-single-line"><span class="field-label">IU Units:</span> ${
         unitLinks.map(u => u.url
           ? `<a href="${u.url}" class="unit-link" target="_blank" rel="noopener">${u.name}</a>`
           : u.name
-        ).join(', ')
+        ).join(' | ')
       }</div>`
     : '';
-
-  const filterBtnHtml = `<button class="activity-filter-btn"
-    onclick="showOnlyActivityPartners(${attrJson(actId)}); return false;">
-    See other Partners
-  </button>`;
 
   // Register pre-computed partner list keyed by activity id
   const communityPartners = Array.isArray(activity.community_partners)
@@ -107,21 +97,20 @@ function buildActivityHtml(activity, currentEntityId) {
   window._activityPartners = window._activityPartners || {};
   window._activityPartners[actId] = communityPartners;
 
-  // Dropdown: partners stored in geojson, read from _activityPartners on open
-  const dropdownId = `partners-${actId ?? actName.replace(/\W/g, '')}`;
-  const partnerDropdownHtml = `
-    <span class="partner-toggle-btn"
-      onclick="toggleActivityPartners(${attrJson(actId)}, '${dropdownId}', ${attrJson(currentEntityId)}); return false;">
-      List of other Partners ▾
-    </span>
-    <div class="partner-list" id="${dropdownId}"></div>`;
+  const filterBtnHtml = `<button class="activity-filter-btn"
+    onclick="showOnlyActivityPartners(${attrJson(actId)}); return false;">
+    Display other partners
+  </button>`;
+
+  const actionRowHtml = (learnMoreHtml || filterBtnHtml)
+    ? `<div class="activity-action-row">${learnMoreHtml}${filterBtnHtml}</div>`
+    : '';
 
   return `
     <div class="activity-item">
       ${nameHtml}
+      ${actionRowHtml}
       ${unitsHtml}
-      ${filterBtnHtml}
-      ${partnerDropdownHtml}
     </div>`;
 }
 
@@ -210,7 +199,6 @@ function buildEntityPanel(entity, entityIndex, popupId) {
 
   const nameHtml = `
     <div class="org-name-header">
-      <span class="field-label">Partner</span>
       <div class="org-name-plain">${name}</div>
     </div>`;
 
@@ -222,34 +210,21 @@ function buildEntityPanel(entity, entityIndex, popupId) {
     ? `<p class="org-description">${description}</p>`
     : '';
 
-  function activitiesForGoal(goalName) {
-    const goalActivities = activities.filter(a => {
-      const goals = Array.isArray(a.goal_names) ? a.goal_names : [];
-      // Show if activity has no goal mapping (show under all tabs),
-      // or if the goal name is explicitly listed
-      return goals.length === 0 || goals.includes(goalName);
-    });
-    return goalActivities.map(a => buildActivityHtml(a, entity?.id ?? null)).join('');
+  function goalNumber(fullName) {
+    const m = String(fullName).match(/Goal\s+(\d+)/i);
+    return m ? parseInt(m[1]) : 999;
   }
 
-  const goalTabsHtml = programs.length
-    ? programs.map((p, i) => `
-        <button class="goal-tab${i === 0 ? ' active' : ''}"
-                onclick="switchGoalTab('${popupId}', ${entityIndex}, ${i}); return false;">
-          ${shortGoalLabel(p)}
-        </button>`).join('')
-    : '';
+  const activitiesHtml = activities.map(a => {
+    const goals = Array.isArray(a.goal_names) ? a.goal_names : [];
+    const sortedGoals = [...goals].sort((x, y) => goalNumber(x) - goalNumber(y));
+    const label = sortedGoals.map(shortGoalLabel).join('<br>') || 'Program';
+    return buildActivityHtml(a, entity?.id ?? null, label);
+  }).join('');
 
-  const goalPanelsHtml = programs.length
-    ? programs.map((p, i) => `
-        <div class="goal-panel" data-goal="${i}" style="display:${i === 0 ? 'block' : 'none'};">
-          ${activitiesForGoal(p)}
-        </div>`).join('')
-    : `<div class="goal-panel" data-goal="0">${activitiesForGoal('')}</div>`;
+  const goalPanelsHtml = `<div class="goal-panel">${activitiesHtml}</div>`;
 
-  const goalsSection = programs.length
-    ? `<div class="goal-tab-bar">${goalTabsHtml}</div>${goalPanelsHtml}`
-    : goalPanelsHtml;
+  const goalsSection = `<div class="programs-heading">Programs</div>${goalPanelsHtml}`;
 
   return `
     <div class="entity-panel" data-entity="${entityIndex}" style="display:${entityIndex === 0 ? 'block' : 'none'};">
@@ -257,7 +232,6 @@ function buildEntityPanel(entity, entityIndex, popupId) {
         ${nameHtml}
         ${typeHtml}
       </div>
-      <div class="iu-crimson-line"></div>
       ${descHtml}
       ${goalsSection}
     </div>`;
