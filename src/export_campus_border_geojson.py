@@ -1,7 +1,6 @@
 import json
 import os
 from create_campus_borders import create_indianapolis_border_geojson
-from utils.paths import PUBLIC_DIR
 
 def export_campus_border_geojson(out_path):
     # Ensure the directory exists

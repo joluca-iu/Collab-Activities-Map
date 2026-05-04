@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(python -m pip show pandas)",
+      "Bash(where python *)",
+      "Bash(C:\\\\Users\\\\jluca\\\\AppData\\\\Local\\\\Python\\\\bin\\\\python.exe -c \"import pandas; print\\(pandas.__version__\\)\")"
+    ]
+  }
+}

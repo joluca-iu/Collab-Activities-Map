@@ -1,4 +1,3 @@
-import folium
 import yaml
 import json
 from utils.paths import CONFIGS_DIR, COUNTY_GEOJSON_PATH

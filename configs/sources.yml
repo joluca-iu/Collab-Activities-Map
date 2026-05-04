@@ -9,8 +9,8 @@ portals:
         portal_name: "Indianapolis"
         portal_id: de3eb711-9ae8-43e3-6ef0-8fc2da9c62c1
         program_ids:
-            IUI 2030 Strategic Plan Pillar 3, Goal 1: Workforce Development: b8f8abd3-a732-4fd9-765a-45e606ff0684
-            IUI 2030 Strategic Plan Pillar 3, Goal 2: P-12 Education: bb02667b-b6cf-4565-7e0f-44d0064955ec
-            IUI 2030 Strategic Plan Pillar 3, Goal 3: Economic Development: d179350a-251d-4638-522a-b4650fd19c46
-            IUI 2030 Strategic Plan Pillar 3, Goal 4: Health Service Outcomes: 1546d15b-22ee-47ce-5539-68e8978132ea
-            IUI 2030 Strategic Plan Pillar 3, Goal 5: Global Perspectives: 2c1032c4-247b-44ca-6a88-4e7a2e71f5ee
+            "IUI 2030 Strategic Plan Pillar 3, Goal 1: Workforce Development": b8f8abd3-a732-4fd9-765a-45e606ff0684
+            "IUI 2030 Strategic Plan Pillar 3, Goal 2: P-12 Education": bb02667b-b6cf-4565-7e0f-44d0064955ec
+            "IUI 2030 Strategic Plan Pillar 3, Goal 3: Economic Development": d179350a-251d-4638-522a-b4650fd19c46
+            "IUI 2030 Strategic Plan Pillar 3, Goal 4: Health Service Outcomes": 1546d15b-22ee-47ce-5539-68e8978132ea
+            "IUI 2030 Strategic Plan Pillar 3, Goal 5: Global Perspectives": 2c1032c4-247b-44ca-6a88-4e7a2e71f5ee

@@ -7,6 +7,17 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 
+// ── Marker icons ─────────────────────────────────────────────────────────────
+
+const defaultIcon = L.icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+});
+
+
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 // "IUI 2030 Strategic Plan Pillar 3, Goal 1: Workforce Development"
@@ -49,38 +60,145 @@ window.switchGoalTab = function(popupId, entityIndex, goalIndex) {
 
 let _popupSeq = 0;
 
-function buildActivityHtml(activity) {
-  const actUrl  = activity.url  ?? null;
+// JSON.stringify a value for safe embedding inside a double-quoted HTML attribute.
+// Browsers convert &quot; → " before handing the string to the JS engine.
+function attrJson(v) {
+  return JSON.stringify(v).replace(/"/g, '&quot;');
+}
+
+function buildActivityHtml(activity, currentEntityId) {
+  const actId   = activity.id   ?? null;
   const actName = activity.name ?? 'Unnamed Activity';
   const focuses = Array.isArray(activity.focuses) ? activity.focuses : [];
   const contact = [activity.contactFirstname, activity.contactLastname].filter(Boolean).join(' ');
   const office  = activity.contactOffice ?? null;
-  const units   = activity.units ?? null;
+  const unitLinks = Array.isArray(activity.unit_links) ? activity.unit_links : [];
+  const courses = activity.courses ?? null;
 
-  const nameHtml = actUrl
-    ? `<a href="${actUrl}" class="activity-name" target="_blank" rel="noopener">${actName}</a>`
-    : `<span class="activity-name-plain">${actName}</span>`;
+  // Always link via the Collaboratory activity page using the activity id
+  const actUrl  = actId ? `https://he.cecollaboratory.com/iui/activities/${actId}` : null;
+  const learnMoreHtml = actUrl
+    ? `<a href="${actUrl}" class="activity-learn-more" target="_blank" rel="noopener">Click to learn more about program</a>`
+    : '';
+  const nameHtml = `
+    <div class="activity-name-header">
+      <span class="field-label" style="font-style: italic;">Program</span>
+      <div class="activity-name-plain" style="font-weight: 700;">${actName}</div>
+      ${learnMoreHtml}
+    </div>`;
 
-  const focusesLabelHtml = focuses.length
-    ? `<div class="social-issue-line"><span class="field-label">Social Issue Addressed:</span> ${focuses.join(', ')}</div>`
+  const unitsHtml = unitLinks.length
+    ? `<div class="meta-single-line"><span class="field-label">Units:</span> ${
+        unitLinks.map(u => u.url
+          ? `<a href="${u.url}" class="unit-link" target="_blank" rel="noopener">${u.name}</a>`
+          : u.name
+        ).join(', ')
+      }</div>`
     : '';
 
-  const contactHtml = contact
-    ? `<div class="meta-single-line"><span class="field-label">Contact:</span> ${contact}${office ? `, ${office}` : ''}</div>`
-    : '';
+  const filterBtnHtml = `<button class="activity-filter-btn"
+    onclick="showOnlyActivityPartners(${attrJson(actId)}); return false;">
+    See other Partners
+  </button>`;
 
-  const unitsHtml = units
-    ? `<div class="meta-single-line"><span class="field-label">Units:</span> ${units}</div>`
-    : '';
+  // Register pre-computed partner list keyed by activity id
+  const communityPartners = Array.isArray(activity.community_partners)
+    ? activity.community_partners : [];
+  window._activityPartners = window._activityPartners || {};
+  window._activityPartners[actId] = communityPartners;
+
+  // Dropdown: partners stored in geojson, read from _activityPartners on open
+  const dropdownId = `partners-${actId ?? actName.replace(/\W/g, '')}`;
+  const partnerDropdownHtml = `
+    <span class="partner-toggle-btn"
+      onclick="toggleActivityPartners(${attrJson(actId)}, '${dropdownId}', ${attrJson(currentEntityId)}); return false;">
+      List of other Partners ▾
+    </span>
+    <div class="partner-list" id="${dropdownId}"></div>`;
 
   return `
     <div class="activity-item">
       ${nameHtml}
-      ${focusesLabelHtml}
-      ${contactHtml}
       ${unitsHtml}
+      ${filterBtnHtml}
+      ${partnerDropdownHtml}
     </div>`;
 }
+
+// ── Activity partner highlight ────────────────────────────────────────────────
+
+window.showOnlyActivityPartners = function(actId) {
+  // Visually uncheck all filter checkboxes (no change event fired, so applyFilters won't run)
+  document.querySelectorAll('#filters input[type="checkbox"]').forEach(cb => {
+    cb.checked = false;
+  });
+
+  const partnerIds = new Set(
+    (window._activityPartners?.[actId] ?? []).map(p => p.id)
+  );
+
+  Object.entries(window._markerRegistry ?? {}).forEach(([entityId, entry]) => {
+    const isPartner = partnerIds.has(Number(entityId)) || partnerIds.has(entityId);
+    const opacity = isPartner ? '1' : '0';
+    const events  = isPartner ? '' : 'none';
+    const el = entry.marker.getElement();
+    if (el) { el.style.opacity = opacity; el.style.pointerEvents = events; }
+    const shadow = entry.marker._shadow;
+    if (shadow) { shadow.style.opacity = opacity; }
+  });
+};
+
+window.resetMarkerVisibility = function() {
+  Object.values(window._markerRegistry ?? {}).forEach(entry => {
+    const el = entry.marker.getElement();
+    if (el) { el.style.opacity = '1'; el.style.pointerEvents = ''; }
+    const shadow = entry.marker._shadow;
+    if (shadow) { shadow.style.opacity = '1'; }
+  });
+};
+
+
+// ── Partner dropdown helpers ──────────────────────────────────────────────────
+
+window.toggleActivityPartners = function(actKey, listId, currentEntityId) {
+  const listEl = document.getElementById(listId);
+  if (!listEl) return;
+
+  // Toggle off if already visible
+  if (listEl.style.display !== 'none' && listEl.style.display !== '') {
+    listEl.style.display = 'none';
+    return;
+  }
+
+  // Read pre-computed partner list; filter out the current org
+  const partners = (window._activityPartners?.[actKey] ?? [])
+    .filter(p => p.id !== currentEntityId);
+
+  listEl.innerHTML = partners.length
+    ? partners.map(p =>
+        `<div class="partner-link"
+          onclick="openEntityPopup(${attrJson(p.id)}, ${attrJson(p.name)})"
+        >${p.name}</div>`
+      ).join('')
+    : '<div class="partner-link-empty">No other partners found.</div>';
+
+  listEl.style.display = 'block';
+};
+
+window.openEntityPopup = function(entityId, entityName) {
+  const entry = window._markerRegistry?.[entityId];
+  if (!entry) return;
+  map.closePopup();
+  entry.marker.openPopup();
+  // If the target entity is not the first tab, switch to it
+  if (entry.entityIndex > 0) {
+    setTimeout(() => {
+      document.querySelectorAll('.entity-tab').forEach(tab => {
+        if (tab.textContent.trim() === entityName) tab.click();
+      });
+    }, 50);
+  }
+};
 
 function buildEntityPanel(entity, entityIndex, popupId) {
   const name        = entity?.name ?? 'Unknown Organization';
@@ -90,9 +208,11 @@ function buildEntityPanel(entity, entityIndex, popupId) {
   const programs    = Array.isArray(entity?.programs) ? entity.programs : (entity?.programs ? [entity.programs] : []);
   const activities  = Array.isArray(entity?.activities) ? entity.activities : [];
 
-  const nameHtml = url
-    ? `<a href="${url}" class="org-name" target="_blank" rel="noopener">${name}</a>`
-    : `<span class="org-name-plain">${name}</span>`;
+  const nameHtml = `
+    <div class="org-name-header">
+      <span class="field-label">Partner</span>
+      <div class="org-name-plain">${name}</div>
+    </div>`;
 
   const typeHtml = type
     ? `<span class="org-type">${type}</span>`
@@ -100,17 +220,16 @@ function buildEntityPanel(entity, entityIndex, popupId) {
 
   const descHtml = description
     ? `<p class="org-description">${description}</p>`
-    : `<p class="org-description org-description--empty"><em>No description available.</em></p>`;
+    : '';
 
   function activitiesForGoal(goalName) {
     const goalActivities = activities.filter(a => {
       const goals = Array.isArray(a.goal_names) ? a.goal_names : [];
-      // Show if activity matches this goal, or has no goal mapping (show under all)
+      // Show if activity has no goal mapping (show under all tabs),
+      // or if the goal name is explicitly listed
       return goals.length === 0 || goals.includes(goalName);
     });
-    return goalActivities.length
-      ? goalActivities.map(buildActivityHtml).join('')
-      : `<div class="activity-item"><p class="activity-description"><em>No activities listed for this goal.</em></p></div>`;
+    return goalActivities.map(a => buildActivityHtml(a, entity?.id ?? null)).join('');
   }
 
   const goalTabsHtml = programs.length
@@ -179,6 +298,9 @@ function apply_markers(schools_geojson) {
     if (layer instanceof L.Marker) map.removeLayer(layer);
   });
 
+  // Reset registry so openEntityPopup() can find the new markers
+  window._markerRegistry = {};
+
   schools_geojson.features.forEach(feature => {
     const coords = feature.geometry?.coordinates;
     if (!Array.isArray(coords) || coords.length < 2) return;
@@ -187,8 +309,15 @@ function apply_markers(schools_geojson) {
     const entities = feature.properties?.entity ?? [];
     const popupId  = `popup-${++_popupSeq}`;
 
-    L.marker([lat, lon])
+    const marker = L.marker([lat, lon])
       .addTo(map)
       .bindPopup(buildPopupHtml(entities, popupId), { maxWidth: 540 });
+
+    // Register each entity so partner dropdowns can navigate to it
+    entities.forEach((entity, entityIndex) => {
+      if (entity?.id) {
+        window._markerRegistry[entity.id] = { marker, entityIndex };
+      }
+    });
   });
 }
